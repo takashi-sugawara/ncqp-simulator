@@ -4,6 +4,25 @@ from pyomo.opt import SolverFactory
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
+import os
+import sys
+import shutil
+
+# --- Solver Path Detection ---
+def get_scip_path():
+    # 1. Check in PATH
+    path = shutil.which("scip")
+    if path: return path
+    
+    # 2. Check the directory of the current Python executable (Reliable for Conda)
+    bin_dir = os.path.dirname(sys.executable)
+    path_in_bin = os.path.join(bin_dir, "scip")
+    if os.path.exists(path_in_bin): return path_in_bin
+
+    # 3. Check common Conda/Linux paths on Streamlit Cloud
+    for p in ["/home/adminuser/.conda/bin/scip", "/usr/bin/scip", "/opt/conda/bin/scip"]:
+        if os.path.exists(p): return p
+    return None
 
 st.set_page_config(page_title="NCQP Optimizer", layout="wide")
 
@@ -102,8 +121,11 @@ with tab_sim:
         model.C2 = pyo.Constraint(expr = C[2] == b * n[2] * n[1])
         model.C3 = pyo.Constraint(expr = C[3] == c * n[3])
 
-        opt = SolverFactory('scip')
-        
+        scip_exec = get_scip_path()
+        if scip_exec:
+            opt = SolverFactory('scip', executable=scip_exec)
+        else:
+            opt = SolverFactory('scip')
         start_time = time.time()
         results = opt.solve(model, tee=False)
         end_time = time.time()
