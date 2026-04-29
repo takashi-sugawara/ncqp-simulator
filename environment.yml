@@ -1,11 +1,13 @@
 name: ncqp-streamlit
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - python=3.12
-  - streamlit
-  - pyomo
+  # CondaにはSCIPとpip本体だけをインストールさせる
   - scip
-  - pandas
-  - matplotlib
+  - pip
+  - pip:
+      # 残りのPythonパッケージは高速なpipに任せる
+      - streamlit
+      - pyomo
+      - pandas
+      - matplotlib
