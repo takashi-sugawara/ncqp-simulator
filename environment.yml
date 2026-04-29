@@ -1,0 +1,11 @@
+name: ncqp-streamlit
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - streamlit
+  - pyomo
+  - scip
+  - pandas
+  - matplotlib
